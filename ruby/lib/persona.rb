@@ -2,8 +2,13 @@ class Contrato
   @@block_before
   @@block_after
 
+  @@invariants = []
   @@wrapped_methods = []
   @@methods_blocks = []
+
+  def self.invariant(&block)
+    @@invariants << block
+  end
 
   def self.before(&block)
     @@block_before = block
@@ -21,6 +26,15 @@ class Contrato
     block.call
   end
 
+  def self.check_invariants
+    @@invariants.each do |invariant|
+      unless invariant.call
+        # raise Exception
+        puts "Rompe"
+      end
+    end
+  end
+
   def self.method_added(name)
     if @@wrapped_methods.include?(name) # el metodo ya fue wrappeado y se está redefiniendo
       @@wrapped_methods.delete(name)
@@ -34,6 +48,7 @@ class Contrato
       element = @@methods_blocks.select {
         |e| e[:nombre] == name
       }.first
+      check = method(:check_invariants)
       define_method(name) do |*args, &block|
         unless element[:before].nil?
           element[:before].call
@@ -42,6 +57,7 @@ class Contrato
         unless element[:after].nil?
           element[:after].call
         end
+        check.call
       end
     end
   end
@@ -51,6 +67,7 @@ class Persona < Contrato
 
   before { puts "BLOCK BEFORE" }
   after { puts "BLOCK AFTER" }
+  invariant { (@edad.nil? ? 0 : @edad) > 0 }
 
   def edad
     puts 'la edad es ' + @edad.to_s
