@@ -1,6 +1,6 @@
 class Contrato
-  @@block_before
-  @@block_after
+  @@block_pre
+  @@block_post
 
   @@invariants = []
   @@wrapped_methods = []
@@ -10,12 +10,12 @@ class Contrato
     @@invariants << block
   end
 
-  def self.before(&block)
-    @@block_before = block
+  def self.pre(&block)
+    @@block_pre = block
   end
 
-  def self.after(&block)
-    @@block_after = block
+  def self.post(&block)
+    @@block_post = block
   end
 
   def self.execute_before(&block)
@@ -41,21 +41,21 @@ class Contrato
     else # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
       @@wrapped_methods << name
       name_before = "@#{name.to_s}_before".to_sym
-      @@methods_blocks << { nombre: name, before: @@block_before, after: @@block_after }
-      @@block_before = nil
-      @@block_after = nil
+      @@methods_blocks << { nombre: name, pre: @@block_pre, post: @@block_post }
+      @@block_pre = nil
+      @@block_post = nil
       orig_meth = instance_method(name)
       element = @@methods_blocks.select {
         |e| e[:nombre] == name
       }.first
       check = method(:check_invariants)
       define_method(name) do |*args, &block|
-        unless element[:before].nil?
-          element[:before].call
+        unless element[:pre].nil?
+          element[:pre].call
         end
         orig_meth.bind(self).call *args, &block
-        unless element[:after].nil?
-          element[:after].call
+        unless element[:post].nil?
+          element[:post].call
         end
         check.call
       end
@@ -65,8 +65,8 @@ end
 
 class Persona < Contrato
 
-  before { puts "BLOCK BEFORE" }
-  after { puts "BLOCK AFTER" }
+  pre { puts "BLOCK BEFORE" }
+  post { puts "BLOCK AFTER" }
   invariant { (@edad.nil? ? 0 : @edad) > 0 }
 
   def edad
@@ -79,8 +79,8 @@ class Persona < Contrato
     @edad = n
   end
 
-  before { puts "another_method - BLOCK BEFORE" }
-  after { puts "another_method - BLOCK AFTER" }
+  pre { puts "another_method - BLOCK BEFORE" }
+  post { puts "another_method - BLOCK AFTER" }
   def another_method
     puts "ejemplo"
   end
