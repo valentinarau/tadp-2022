@@ -4,7 +4,7 @@ class Contrato
 
   @@invariants = []
   @@wrapped_methods = []
-  @@methods_blocks = []
+  @@methods_blocks = {}
 
   def self.invariant(&block)
     @@invariants << block
@@ -40,13 +40,11 @@ class Contrato
       @@wrapped_methods.delete(method_name)
     else # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
       @@wrapped_methods << method_name
-      @@methods_blocks << { name: method_name, pre: @@block_pre, post: @@block_post }
+      @@methods_blocks[method_name] = { pre: @@block_pre, post: @@block_post }
       @@block_pre = nil
       @@block_post = nil
       orig_meth = instance_method(method_name)
-      method_data = @@methods_blocks.select {
-        |e| e[:name] == method_name
-      }.first
+      method_data = @@methods_blocks[method_name]
       check = method(:check_invariants)
       define_method(method_name) do |*args, &block|
         unless method_data[:pre].nil?
