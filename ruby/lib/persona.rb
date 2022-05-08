@@ -35,27 +35,26 @@ class Contrato
     end
   end
 
-  def self.method_added(name)
-    if @@wrapped_methods.include?(name) # el metodo ya fue wrappeado y se está redefiniendo
-      @@wrapped_methods.delete(name)
+  def self.method_added(method_name)
+    if @@wrapped_methods.include?(method_name) # el metodo ya fue wrappeado y se está redefiniendo
+      @@wrapped_methods.delete(method_name)
     else # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
-      @@wrapped_methods << name
-      name_before = "@#{name.to_s}_before".to_sym
-      @@methods_blocks << { nombre: name, pre: @@block_pre, post: @@block_post }
+      @@wrapped_methods << method_name
+      @@methods_blocks << { name: method_name, pre: @@block_pre, post: @@block_post }
       @@block_pre = nil
       @@block_post = nil
-      orig_meth = instance_method(name)
-      element = @@methods_blocks.select {
-        |e| e[:nombre] == name
+      orig_meth = instance_method(method_name)
+      method_data = @@methods_blocks.select {
+        |e| e[:name] == method_name
       }.first
       check = method(:check_invariants)
-      define_method(name) do |*args, &block|
-        unless element[:pre].nil?
-          element[:pre].call
+      define_method(method_name) do |*args, &block|
+        unless method_data[:pre].nil?
+          method_data[:pre].call
         end
         orig_meth.bind(self).call *args, &block
-        unless element[:post].nil?
-          element[:post].call
+        unless method_data[:post].nil?
+          method_data[:post].call
         end
         check.call
       end
