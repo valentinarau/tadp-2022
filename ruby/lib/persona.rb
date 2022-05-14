@@ -48,6 +48,10 @@ class Module
   end
 
   def method_added(method_name)
+    if method_name.eql?(:method_added) or (@invariants.nil? && @block_post.nil? && @block_pre.nil?)
+      return
+    end
+
     init_if_needed
     if @wrapped_methods.include?(method_name) # el metodo ya fue wrappeado y se está redefiniendo
       @wrapped_methods.delete(method_name)
@@ -74,49 +78,3 @@ class Module
     end
   end
 end
-
-class Persona
-  # invariant { !@edad.nil? && @edad > 0 }
-  # invariant { false }
-  invariant { true }
-
-  pre { "".nil? }
-  post { "".nil? }
-  def edad
-    puts 'la edad es ' + @edad.to_s
-    @edad
-  end
-
-  def set_edad(n)
-    puts 'seteando edad en ' + n.to_s
-    @edad = n
-  end
-
-  pre { "".nil? }
-  post { "".nil? }
-  def another_method
-    puts "ejemplo"
-  end
-end
-
-##### Pruebas #####
-p = Persona.new
-p.edad
-p.set_edad(10)
-p.edad
-
-# se abre la clase Persona
-# se redefine 'edad' y vuelve a wrappearse
-class Persona
-  def edad
-    100
-  end
-end
-
-puts '----'
-p.edad
-p.set_edad(10)
-p.edad
-
-puts '----'
-p.another_method
