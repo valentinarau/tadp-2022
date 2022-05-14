@@ -1,57 +1,72 @@
-class Contrato
-  @@block_pre
-  @@block_post
+module Contrato
 
-  @@invariants = []
-  @@wrapped_methods = []
-  @@methods_blocks = {}
-
-  def self.invariant(&block)
-    @@invariants << block
+  def invariant(&block)
+    if @invariants.nil?
+      @invariants = []
+    end
+    @invariants << block
   end
 
-  def self.pre(&block)
-    @@block_pre = block
+  def pre(&block)
+    @block_pre = block
   end
 
-  def self.post(&block)
-    @@block_post = block
+  def post(&block)
+    @block_post = block
   end
 
-  def self.execute_before(&block)
+  def execute_before(&block)
     block.call
   end
 
-  def self.execute_after(&block)
+  def execute_after(&block)
     block.call
   end
 
-  def self.check_invariants
-    @@invariants.each do |invariant|
-      unless invariant.call
-        # raise Exception
-        puts "Rompe"
+  def check_invariants
+    unless @invariants.nil?
+      @invariants.each do |invariant|
+        unless invariant.call
+          # raise Exception
+          puts "Rompe invariant"
+        end
       end
     end
   end
+end
 
-  def self.method_added(method_name)
-    if @@wrapped_methods.include?(method_name) # el metodo ya fue wrappeado y se está redefiniendo
-      @@wrapped_methods.delete(method_name)
-    else # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
-      @@wrapped_methods << method_name
-      @@methods_blocks[method_name] = { pre: @@block_pre, post: @@block_post }
-      @@block_pre = nil
-      @@block_post = nil
+class Module
+  include Contrato
+
+  private def init_if_needed
+    if @wrapped_methods.nil?
+      @wrapped_methods = []
+    end
+    if @method_blocks.nil?
+      @method_blocks = {}
+    end
+  end
+
+  def method_added(method_name)
+    init_if_needed
+    if @wrapped_methods.include?(method_name) # el metodo ya fue wrappeado y se está redefiniendo
+      @wrapped_methods.delete(method_name)
+    else  # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
+      @wrapped_methods << method_name
+      @method_blocks[method_name] = { pre: @block_pre, post:@block_post }
+      @block_pre = nil
+      @block_post = nil
       orig_meth = instance_method(method_name)
-      method_data = @@methods_blocks[method_name]
+      method_data = @method_blocks[method_name]
       check = method(:check_invariants)
       define_method(method_name) do |*args, &block|
         unless method_data[:pre].nil?
+          puts "METHOD #{method_name} PRE call"
           method_data[:pre].call
         end
         orig_meth.bind(self).call *args, &block
         unless method_data[:post].nil?
+          puts "METHOD #{method_name} POST call"
           method_data[:post].call
         end
         check.call
@@ -60,12 +75,13 @@ class Contrato
   end
 end
 
-class Persona < Contrato
+class Persona
+  # invariant { !@edad.nil? && @edad > 0 }
+  # invariant { false }
+  invariant { true }
 
-  pre { puts "BLOCK BEFORE" }
-  post { puts "BLOCK AFTER" }
-  invariant { (@edad.nil? ? 0 : @edad) > 0 }
-
+  pre { "".nil? }
+  post { "".nil? }
   def edad
     puts 'la edad es ' + @edad.to_s
     @edad
@@ -76,8 +92,8 @@ class Persona < Contrato
     @edad = n
   end
 
-  pre { puts "another_method - BLOCK BEFORE" }
-  post { puts "another_method - BLOCK AFTER" }
+  pre { "".nil? }
+  post { "".nil? }
   def another_method
     puts "ejemplo"
   end
