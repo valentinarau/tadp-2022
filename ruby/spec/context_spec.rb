@@ -30,4 +30,26 @@ describe Context do
     end
   end
 
+  describe 'context delegates on instance' do
+    let(:obj) { Case.new }
+    let(:c) { Context.new(obj, []) }
+
+    Case = Class.new do
+      def return_4
+        4
+      end
+      def return_param(val)
+        val
+      end
+    end
+
+    it 'should return 4' do
+      expect(c.return_4).to be 4
+    end
+
+    it 'should return 111' do
+      got = c.return_param(111)
+      expect(got).to be 111
+    end
+  end
 end
