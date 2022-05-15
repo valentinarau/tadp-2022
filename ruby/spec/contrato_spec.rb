@@ -43,7 +43,13 @@ describe Contrato do
   describe '#pre_and_post_blocks' do
     pre_executed = false
     post_executed = false
+
     GenericClass = Class.new do
+      attr_accessor :int_value
+      def initialize
+        @int_value = 0
+      end
+
       pre { pre_executed = true }
       post { post_executed = true }
       def method_both_blocks
@@ -58,6 +64,45 @@ describe Contrato do
       end
 
       def method_none_blocks
+      end
+
+      pre { 0 > 1 }
+      def method_pre_failing_condition
+      end
+
+      pre { 1 > 0 }
+      def method_pre_passing_condition
+        @int_value = 2
+      end
+
+      post { 0 > 1 }
+      def method_post_failing_condition
+      end
+
+      post { 1 > 0 }
+      def method_post_passing_condition
+        @int_value = 2
+      end
+
+      pre { 0 > 1 }
+      post { post_executed = true }
+      def method_pre_fail_post_pass
+      end
+
+      pre { pre_executed = true }
+      post { 0 > 1 }
+      def method_pre_pass_post_fail
+      end
+
+      pre { 0 > 1 }
+      post { 0 > 1 }
+      def method_pre_fail_post_fail
+      end
+
+      pre { pre_executed = true }
+      post { post_executed = true }
+      def method_pre_pass_post_pass
+        @int_value = 2
       end
     end
 
@@ -89,6 +134,50 @@ describe Contrato do
       generic_class.method_none_blocks
       expect(pre_executed).to be false
       expect(post_executed).to be false
+    end
+
+    it 'should raise a validation execption when PRE condtion fails' do
+      expect { generic_class.method_pre_failing_condition }.to raise_error(ValidationError)
+    end
+
+    it 'should not raise a validation execption and execute method when PRE condtion pass' do
+      expect {
+        generic_class.method_pre_passing_condition
+        int_value = generic_class.int_value
+        expect(int_value).to eq 2
+      }.not_to raise_error
+    end
+
+    it 'should raise a validation execption when POST condtion fails' do
+      expect { generic_class.method_post_failing_condition }.to raise_error(ValidationError)
+    end
+
+    it 'should execute method and then should not raise a validation execption when POST condtion pass' do
+      expect {
+        generic_class.method_post_passing_condition
+        int_value = generic_class.int_value
+        expect(int_value).to eq 2
+      }.not_to raise_error
+    end
+
+    it 'should raise a validation execption when PRE condtion fail and POST pass' do
+      expect { generic_class.method_pre_fail_post_pass }.to raise_error(ValidationError)
+    end
+
+    it 'should raise a validation execption when PRE condtion pass and POST fail' do
+      expect { generic_class.method_pre_pass_post_fail }.to raise_error(ValidationError)
+    end
+
+    it 'should raise a validation execption when PRE condtion fail and POST fail' do
+      expect { generic_class.method_pre_fail_post_fail }.to raise_error(ValidationError)
+    end
+
+    it 'should execute PRE and POST blocks when PRE condtion pass and POST pass' do
+      generic_class.method_pre_pass_post_pass
+      int_value = generic_class.int_value
+      expect(pre_executed).to be true
+      expect(post_executed).to be true
+      expect(int_value).to eq 2
     end
   end
 
