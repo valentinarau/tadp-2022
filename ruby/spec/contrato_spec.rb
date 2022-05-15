@@ -13,27 +13,30 @@ describe Contrato do
     end
 
     Persona = Class.new do
+      def initialize
+        @edad = 10
+      end
       pre { pre_edad_executed = true }
       def edad
-        puts 'la edad es ' + @edad.to_s
         @edad
       end
 
       pre { pre_another_method_executed = true }
       def another_method
-        puts "ejemplo"
       end
     end
 
     it 'should execute only edad pre-block' do
-      persona.edad
+      edad = persona.edad
+      expect(edad).to be 10
       expect(pre_edad_executed).to be true
       expect(pre_another_method_executed).to be false
     end
 
     it 'should execute edad and another_method pre-block' do
-      persona.edad
+      edad = persona.edad
       persona.another_method
+      expect(edad).to be 10
       expect(pre_edad_executed).to be true
       expect(pre_another_method_executed).to be true
     end

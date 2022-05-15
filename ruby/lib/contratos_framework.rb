@@ -29,9 +29,10 @@ class Module
 
     define_method(method_name) do |*args, &block|
       exec.call &method_data[:pre]
-      orig_meth.bind(self).call *args, &block
+      res = orig_meth.bind(self).call *args, &block
       exec.call &method_data[:post]
       check.call
+      res
     end
 
   end
