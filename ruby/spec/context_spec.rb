@@ -8,10 +8,11 @@ describe Context do
       [:req, :method1],
       [:req, :method2],
     ]
+    let(:c) { Context.new(self, parameters) }
+
 
 
     it 'should define a method for each parameter' do
-      c = Context.new(self, parameters, nil)
       expect(c.methods.include?(:sarasa)).to be false
       expect(c.methods.include?(:method1)).to be true
       expect(c.methods.include?(:method2)).to be true
@@ -25,7 +26,6 @@ describe Context do
     end
 
     it 'should not throw exception when args has not value' do
-      c = Context.new(self, parameters)
       expect(c.method1).to be nil
     end
   end
