@@ -38,8 +38,7 @@ module Contrato
     unless @invariants.nil?
       @invariants.each do |invariant|
         unless invariant.call
-          # raise Exception
-          puts "Rompe invariant"
+          raise InvariantError.new
         end
       end
     end

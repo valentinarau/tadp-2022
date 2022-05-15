@@ -140,8 +140,7 @@ describe Contrato do
 
     it 'should raise an error or print console error for single invariant with error class' do
       expect { single_invariant_error_class.generic_method }
-        .to output("Rompe invariant\n").to_stdout
-                                       .or raise_error('Invariant error')
+        .to raise_error(InvariantError)
     end
 
     it 'should not raise an error for single (correct) invariant class' do
