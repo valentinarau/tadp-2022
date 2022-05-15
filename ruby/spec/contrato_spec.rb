@@ -39,4 +39,24 @@ describe Contrato do
     end
   end
 
+  describe 'error cases' do
+    Case = Class.new do
+      pre { 1 > 3}
+      def pre_fails
+      end
+
+      post { 0 == 1}
+      def post_fails
+      end
+    end
+
+    it 'should raise exception when executes pre method' do
+      expect { Case.new.pre_fails }.to raise_error('Validation Error')
+    end
+
+    it 'should raise exception when executes post method' do
+      expect { Case.new.post_fails }.to raise_error('Validation Error')
+    end
+  end
+
 end

@@ -21,7 +21,9 @@ class Module
     check = method(:check_invariants)
     exec = lambda do |&block|
       unless block.nil?
-        block.call
+        unless block.call
+          raise 'Validation Error'
+        end
       end
     end
 
