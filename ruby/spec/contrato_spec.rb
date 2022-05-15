@@ -1,4 +1,4 @@
-require_relative '../lib/persona'
+require_relative '../lib/contrato'
 
 describe Contrato do
   pre_edad_block = false
