@@ -55,24 +55,28 @@ class Module
     end
 
     init_if_needed
-    if @wrapped_methods.include?(method_name) # el metodo ya fue wrappeado y se está redefiniendo
+
+    if @wrapped_methods.include?(method_name) # el metodo ya fue wrappeado y se está redefiniendo (vuelve a entrar en method_added para wrappearse)
       @wrapped_methods.delete(method_name)
-    else # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
-      @wrapped_methods << method_name
-      method_data = extract_method_data
-      orig_meth = instance_method(method_name)
-      check = method(:check_invariants)
-      exec = lambda do |&block|
-        unless block.nil?
-          block.call
-        end
-      end
-      define_method(method_name) do |*args, &block|
-        exec.call &method_data[:pre]
-        orig_meth.bind(self).call *args, &block
-        exec.call &method_data[:post]
-        check.call
+      return
+    end
+
+    @wrapped_methods << method_name
+    method_data = extract_method_data
+    orig_meth = instance_method(method_name)
+    check = method(:check_invariants)
+    exec = lambda do |&block|
+      unless block.nil?
+        block.call
       end
     end
+
+    define_method(method_name) do |*args, &block|
+      exec.call &method_data[:pre]
+      orig_meth.bind(self).call *args, &block
+      exec.call &method_data[:post]
+      check.call
+    end
+
   end
 end
