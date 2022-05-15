@@ -27,12 +27,6 @@ module Contrato
     end
   end
 
-  private def execute(&block)
-    unless block.nil?
-      block.call
-    end
-  end
-
   private def extract_method_data
     data = { pre: @block_pre, post: @block_post }
     @block_pre = nil
@@ -68,7 +62,11 @@ class Module
       method_data = extract_method_data
       orig_meth = instance_method(method_name)
       check = method(:check_invariants)
-      exec = lambda { |&block| execute &block } # bring execute to inner instance scope
+      exec = lambda do |&block|
+        unless block.nil?
+          block.call
+        end
+      end
       define_method(method_name) do |*args, &block|
         exec.call &method_data[:pre]
         orig_meth.bind(self).call *args, &block
