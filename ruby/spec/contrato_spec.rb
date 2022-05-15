@@ -62,4 +62,22 @@ describe Contrato do
     end
   end
 
+  describe 'blocks execution context' do
+    let(:instance) {ContextCase.new}
+
+    ContextCase = Class.new do
+      pre { set_algo true }
+      def get_algo
+        @algo
+      end
+      def set_algo val
+        @algo = val
+      end
+    end
+
+    it 'should execute in instance context' do
+      expect(instance.get_algo).to be true
+    end
+  end
+
 end
