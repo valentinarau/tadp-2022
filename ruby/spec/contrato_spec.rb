@@ -13,29 +13,70 @@ describe Contrato do
     end
 
     Persona = Class.new do
+      def initialize
+        @edad = 10
+      end
       pre { pre_edad_executed = true }
       def edad
-        puts 'la edad es ' + @edad.to_s
         @edad
       end
 
       pre { pre_another_method_executed = true }
       def another_method
-        puts "ejemplo"
       end
     end
 
     it 'should execute only edad pre-block' do
-      persona.edad
+      edad = persona.edad
+      expect(edad).to be 10
       expect(pre_edad_executed).to be true
       expect(pre_another_method_executed).to be false
     end
 
     it 'should execute edad and another_method pre-block' do
-      persona.edad
+      edad = persona.edad
       persona.another_method
+      expect(edad).to be 10
       expect(pre_edad_executed).to be true
       expect(pre_another_method_executed).to be true
+    end
+  end
+
+  describe 'error cases' do
+    Case = Class.new do
+      pre { 1 > 3}
+      def pre_fails
+      end
+
+      post { 0 == 1}
+      def post_fails
+      end
+    end
+
+    it 'should raise exception when executes pre method' do
+      expect { Case.new.pre_fails }.to raise_error('Validation Error')
+    end
+
+    it 'should raise exception when executes post method' do
+      expect { Case.new.post_fails }.to raise_error('Validation Error')
+    end
+  end
+
+  describe 'blocks execution context' do
+    let(:instance) {ContextCase.new}
+
+    ContextCase = Class.new do
+      pre { set_algo true }
+      def get_algo
+        @algo
+      end
+      def set_algo val
+        @algo = val
+      end
+    end
+
+    it 'should execute in instance context' do
+      expect(instance.get_algo).to be true
     end
   end
 
