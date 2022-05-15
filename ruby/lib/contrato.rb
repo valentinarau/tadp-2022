@@ -33,6 +33,13 @@ module Contrato
     end
   end
 
+  private def extract_method_data
+    data = { pre: @block_pre, post: @block_post }
+    @block_pre = nil
+    @block_post = nil
+    data
+  end
+
   def check_invariants
     unless @invariants.nil?
       @invariants.each do |invariant|
@@ -58,11 +65,8 @@ class Module
       @wrapped_methods.delete(method_name)
     else # el metodo se está definiendo por primera vez o redefiniendo después de wrappearlo
       @wrapped_methods << method_name
-      @method_blocks[method_name] = { pre: @block_pre, post: @block_post }
-      @block_pre = nil
-      @block_post = nil
+      method_data = extract_method_data
       orig_meth = instance_method(method_name)
-      method_data = @method_blocks[method_name]
       check = method(:check_invariants)
       exec = lambda { |&block| execute &block } # bring execute to inner instance scope
       define_method(method_name) do |*args, &block|
