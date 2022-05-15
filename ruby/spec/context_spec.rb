@@ -1,5 +1,3 @@
-require_relative '../lib/context'
-
 describe Context do
   it 'should instantiate a context' do
     Context.new(self, [], nil)

@@ -1,5 +1,3 @@
-require_relative '../lib/persona'
-
 describe Contrato do
   pre_edad_block = false
   let(:persona) { Persona.new }
