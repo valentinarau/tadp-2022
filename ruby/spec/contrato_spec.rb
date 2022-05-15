@@ -1,4 +1,4 @@
-require_relative '../lib/contrato'
+require_relative '../lib/contratos_framework'
 
 describe Contrato do
 
