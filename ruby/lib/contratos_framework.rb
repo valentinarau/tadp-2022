@@ -26,9 +26,11 @@ class Module
     end
 
     define_method(method_name) do |*args, &block|
+      self.instance_eval(&method_data[:before])
       exec.call &method_data[:pre]
       orig_meth.bind(self).call *args, &block
       exec.call &method_data[:post]
+      self.instance_eval(&method_data[:after])
       check.call
     end
 

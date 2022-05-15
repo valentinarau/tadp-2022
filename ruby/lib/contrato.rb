@@ -7,6 +7,11 @@ module Contrato
     @invariants << block
   end
 
+  def before_and_after_each_call(block_before, block_after)
+    @block_before = block_before
+    @block_after = block_after
+  end
+
   def pre(&block)
     @block_pre = block
   end
@@ -28,7 +33,7 @@ module Contrato
   end
 
   private def extract_method_data
-    data = { pre: @block_pre, post: @block_post }
+    data = { pre: @block_pre, post: @block_post, before: @block_before, after: @block_after }
     @block_pre = nil
     @block_post = nil
     data
