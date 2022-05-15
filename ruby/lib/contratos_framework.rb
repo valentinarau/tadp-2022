@@ -23,9 +23,7 @@ class Module
     define_method(method_name) do |*args, &block|
       exec = lambda do |&block|
         unless block.nil?
-          unless self.instance_eval &block
-            raise 'Validation Error'
-          end
+          raise 'Validation Error' unless self.instance_eval &block
         end
       end
       exec.call &method_data[:pre]
