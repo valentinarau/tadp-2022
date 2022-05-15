@@ -10,4 +10,8 @@ class Context
     end
   end
 
+  private def method_missing(symbol, *args)
+    @self.method(symbol).call *args
+  end
+
 end
