@@ -10,16 +10,18 @@ describe Contrato do
     before(:each) do
       pre_edad_executed = false
       pre_another_method_executed = false
+
     end
 
     Persona = Class.new do
 
 
 
-      before_and_after_each_call( proc { self.set_edad 18 }, proc {  self.set_salario 1000  } )
+      before_and_after_each_call( proc { self.set_edad 10 }, proc {  self.set_salario 1000  } )
 
       def initialize
-        @edad = 10
+        @edad = 9
+
       end
       pre { pre_edad_executed = true }
       def edad
@@ -27,17 +29,17 @@ describe Contrato do
         @edad
       end
 
-      def set_edad nuevaEdad
-        @edad = nuevaEdad
-      end
-
       def salario
         puts 'salario es ' + @salario.to_s
-        @salario
+        return @salario
       end
 
       def set_salario nuevoSalario
         @salario = nuevoSalario
+      end
+
+      def set_edad nuevaEdad
+        @edad = nuevaEdad
       end
 
       pre { pre_another_method_executed = true }
@@ -62,10 +64,18 @@ describe Contrato do
     end
 
     it 'should execute for all methods the before and after each call procs' do
-      persona.edad
-      persona.salario
-      expect(persona.instance_variable_get(:@edad)).to eq 18
-      expect(persona.instance_variable_get(:@salario)).to eq 1000
+      expect(persona.instance_variable_get(:@edad)).to eq 9
+      expect(persona.instance_variable_get(:@salario)).to be nil
+      edad = persona.edad
+      salario = persona.salario
+      expect(edad).to eq 10
+      expect(salario).to eq 1000
+
+    end
+
+    it 'should evaluate method before execute global after block' do
+      salario = persona.salario
+      expect(salario).to be nil
     end
 
   end
