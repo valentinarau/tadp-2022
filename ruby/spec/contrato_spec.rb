@@ -170,7 +170,6 @@ describe Contrato do
 
     it 'should raise a validation execption when PRE condtion fail and POST fail' do
       expect { generic_class.method_pre_fail_post_fail }.to raise_error(PreBlockValidationError)
-      # expect { generic_class.method_pre_fail_post_fail }.to raise_error()
     end
 
     it 'should execute PRE and POST blocks when PRE condtion pass and POST pass' do
