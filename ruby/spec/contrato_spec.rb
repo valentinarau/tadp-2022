@@ -140,7 +140,7 @@ describe Contrato do
       expect { generic_class.method_pre_failing_condition }.to raise_error(PreBlockValidationError)
     end
 
-    it 'should not raise a validation execption and execute method when PRE condtion pass' do
+    it 'should not raise a validation exception and execute method when PRE condition pass' do
       expect {
         generic_class.method_pre_passing_condition
         int_value = generic_class.int_value
