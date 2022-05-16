@@ -136,7 +136,7 @@ describe Contrato do
       expect(post_executed).to be false
     end
 
-    it 'should raise a validation execption when PRE condtion fails' do
+    it 'should raise a validation exception when PRE condition fails' do
       expect { generic_class.method_pre_failing_condition }.to raise_error(PreBlockValidationError)
     end
 
