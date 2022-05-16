@@ -141,11 +141,9 @@ describe Contrato do
     end
 
     it 'should not raise a validation exception and execute method when PRE condition pass' do
-      expect {
-        generic_class.method_pre_passing_condition
-        int_value = generic_class.int_value
-        expect(int_value).to eq 2
-      }.not_to raise_error
+      expect { generic_class.method_pre_passing_condition }.not_to raise_error
+      int_value = generic_class.int_value
+      expect(int_value).to eq 2
     end
 
     it 'should raise a validation execption when POST condtion fails' do
@@ -153,11 +151,9 @@ describe Contrato do
     end
 
     it 'should execute method and then should not raise a validation execption when POST condtion pass' do
-      expect {
-        generic_class.method_post_passing_condition
-        int_value = generic_class.int_value
-        expect(int_value).to eq 2
-      }.not_to raise_error
+      expect { generic_class.method_post_passing_condition }.not_to raise_error
+      int_value = generic_class.int_value
+      expect(int_value).to eq 2
     end
 
     it 'should raise a validation execption when PRE condtion fail and POST pass' do
@@ -173,7 +169,7 @@ describe Contrato do
     end
 
     it 'should execute PRE and POST blocks when PRE condtion pass and POST pass' do
-      generic_class.method_pre_pass_post_pass
+      expect{ generic_class.method_pre_pass_post_pass }.not_to raise_error
       int_value = generic_class.int_value
       expect(pre_executed).to be true
       expect(post_executed).to be true
@@ -187,20 +183,10 @@ describe Contrato do
       end
     end
 
-    SingleInvariantErrorClass = Class.new do
-      @bool_var = false
-
-      invariant { @bool_var }
-
-      def generic_method
-      end
-    end
-
     SingleInvariantClass = Class.new do
-      @bool_var = true
+      @bool_var = nil
 
       invariant { @bool_var }
-
       def generic_method
       end
     end
@@ -220,25 +206,32 @@ describe Contrato do
 
     let(:no_invariants_class) { NoInvariantsClass.new }
     let(:single_invariant_class) { SingleInvariantClass.new }
-    let(:single_invariant_error_class) { SingleInvariantErrorClass.new }
+    let(:single_invariant_error_class) { SingleInvariantClass.new }
     let(:multiple_invariants_class) { MultipleInvariantsClass.new }
 
     it 'should not raise an error for no invariants class' do
       expect { no_invariants_class.generic_method }.not_to raise_error
     end
 
-    it 'should raise an error or print console error for single invariant with error class' do
-      expect { single_invariant_error_class.generic_method }
-        .to raise_error(InvariantError)
+    it 'should raise an error for single invariant with error class' do
+      single_invariant_error_class.class.instance_variable_set(:@bool_var, false)
+      expect { single_invariant_error_class.generic_method }.to raise_error(InvariantError)
     end
 
     it 'should not raise an error for single (correct) invariant class' do
+      single_invariant_class.class.instance_variable_set(:@bool_var, true)
       expect { single_invariant_class.generic_method }.not_to raise_error
     end
 
     it 'should not raise an error for multiple (correct) invariant class' do
       expect { multiple_invariants_class.generic_method }.not_to raise_error
     end
+
+    it 'should raise error with an invalid invariant' do
+      multiple_invariants_class.class.instance_variable_set(:@im_an_array, [1,2,3])
+      expect { multiple_invariants_class.generic_method }.to raise_error(InvariantError)
+    end
+
   end
 end
 
