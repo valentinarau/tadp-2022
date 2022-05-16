@@ -14,4 +14,9 @@ class Context
     @self.method(symbol).call *args
   end
 
+  def execute(&block)
+    unless block.nil?
+      raise ValidationError.new unless @self.instance_eval &block
+    end
+  end
 end

@@ -18,18 +18,12 @@ class Module
     @wrapped_methods << method_name
     method_data = extract_method_data
     orig_meth = instance_method(method_name)
-    check = method(:check_invariants)
-
     define_method(method_name) do |*args, &block|
-      exec = lambda do |&block|
-        unless block.nil?
-          raise ValidationError.new unless self.instance_eval &block
-        end
-      end
-      exec.call &method_data[:pre]
+      context = Context.new(self, orig_meth.parameters, args)
+      context.execute &method_data[:pre]
       res = orig_meth.bind(self).call *args, &block
-      exec.call &method_data[:post]
-      check.call
+      context.execute &method_data[:post]
+      self.class.check_invariants(self.class)
       res
     end
 
