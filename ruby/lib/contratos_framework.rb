@@ -20,12 +20,11 @@ class Module
     orig_meth = instance_method(method_name)
     define_method(method_name) do |*args, &block|
       context = Context.new(self, orig_meth.parameters, args)
-      context.execute &method_data[:pre]
+      context.execute(PreBlockValidationError, &method_data[:pre])
       res = orig_meth.bind(self).call *args, &block
-      context.execute &method_data[:post]
+      context.execute(PostBlockValidationError, &method_data[:post])
       self.class.check_invariants(self.class)
       res
     end
-
   end
 end

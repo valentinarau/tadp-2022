@@ -137,7 +137,7 @@ describe Contrato do
     end
 
     it 'should raise a validation execption when PRE condtion fails' do
-      expect { generic_class.method_pre_failing_condition }.to raise_error(ValidationError)
+      expect { generic_class.method_pre_failing_condition }.to raise_error(PreBlockValidationError)
     end
 
     it 'should not raise a validation execption and execute method when PRE condtion pass' do
@@ -149,7 +149,7 @@ describe Contrato do
     end
 
     it 'should raise a validation execption when POST condtion fails' do
-      expect { generic_class.method_post_failing_condition }.to raise_error(ValidationError)
+      expect { generic_class.method_post_failing_condition }.to raise_error(PostBlockValidationError)
     end
 
     it 'should execute method and then should not raise a validation execption when POST condtion pass' do
@@ -161,15 +161,16 @@ describe Contrato do
     end
 
     it 'should raise a validation execption when PRE condtion fail and POST pass' do
-      expect { generic_class.method_pre_fail_post_pass }.to raise_error(ValidationError)
+      expect { generic_class.method_pre_fail_post_pass }.to raise_error(PreBlockValidationError)
     end
 
     it 'should raise a validation execption when PRE condtion pass and POST fail' do
-      expect { generic_class.method_pre_pass_post_fail }.to raise_error(ValidationError)
+      expect { generic_class.method_pre_pass_post_fail }.to raise_error(PostBlockValidationError)
     end
 
     it 'should raise a validation execption when PRE condtion fail and POST fail' do
-      expect { generic_class.method_pre_fail_post_fail }.to raise_error(ValidationError)
+      expect { generic_class.method_pre_fail_post_fail }.to raise_error(PreBlockValidationError)
+      # expect { generic_class.method_pre_fail_post_fail }.to raise_error()
     end
 
     it 'should execute PRE and POST blocks when PRE condtion pass and POST pass' do
