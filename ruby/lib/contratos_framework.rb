@@ -34,7 +34,7 @@ class Module
       method_data[:after].each do |block|
         exec.call &block
       end
-      self.class.check_invariants(self.class)
+      self.class.check_invariants(self)
       res
     end
   end
