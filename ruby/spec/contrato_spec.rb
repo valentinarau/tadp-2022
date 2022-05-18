@@ -10,18 +10,14 @@ describe Contrato do
     before(:each) do
       pre_edad_executed = false
       pre_another_method_executed = false
-
     end
 
     Persona = Class.new do
-
-
 
       before_and_after_each_call( proc { self.set_edad 10 }, proc {  self.set_salario 1000  } )
 
       def initialize
         @edad = 9
-
       end
       pre { pre_edad_executed = true }
       def edad
@@ -31,7 +27,7 @@ describe Contrato do
 
       def salario
         puts 'salario es ' + @salario.to_s
-        return @salario
+        @salario
       end
 
       def set_salario nuevoSalario
@@ -70,7 +66,6 @@ describe Contrato do
       salario = persona.salario
       expect(edad).to eq 10
       expect(salario).to eq 1000
-
     end
 
     it 'should evaluate method before execute global after block' do
@@ -101,9 +96,9 @@ describe Contrato do
   end
 
   describe 'blocks execution context' do
-    let(:instance) {ContextCase.new}
+    let(:instance) {CaseWithContext.new}
 
-    ContextCase = Class.new do
+    CaseWithContext = Class.new do
       pre { set_algo true }
       def get_algo
         @algo
