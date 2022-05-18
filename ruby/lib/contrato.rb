@@ -46,12 +46,11 @@ module Contrato
     data
   end
 
-  def check_invariants
+  def check_invariants(instance)
     unless @invariants.nil?
       @invariants.each do |invariant|
-        unless invariant.call
-          # raise Exception
-          puts "Rompe invariant"
+        unless instance.instance_eval &invariant
+          raise InvariantError.new
         end
       end
     end
