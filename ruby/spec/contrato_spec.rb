@@ -13,16 +13,34 @@ describe Contrato do
     end
 
     Persona = Class.new do
+
+      before_and_after_each_call( proc { self.set_edad 10 }, proc {  self.set_salario 1000  } )
+
       def initialize
-        @edad = 10
+        @edad = 9
       end
       pre { pre_edad_executed = true }
       def edad
+        puts 'la edad es ' + @edad.to_s
         @edad
+      end
+
+      def salario
+        puts 'salario es ' + @salario.to_s
+        @salario
+      end
+
+      def set_salario nuevoSalario
+        @salario = nuevoSalario
+      end
+
+      def set_edad nuevaEdad
+        @edad = nuevaEdad
       end
 
       pre { pre_another_method_executed = true }
       def another_method
+        puts "ejemplo"
       end
     end
 
@@ -40,10 +58,25 @@ describe Contrato do
       expect(pre_edad_executed).to be true
       expect(pre_another_method_executed).to be true
     end
+
+    it 'should execute for all methods the before and after each call procs' do
+      expect(persona.instance_variable_get(:@edad)).to eq 9
+      expect(persona.instance_variable_get(:@salario)).to be nil
+      edad = persona.edad
+      salario = persona.salario
+      expect(edad).to eq 10
+      expect(salario).to eq 1000
+    end
+
+    it 'should evaluate method before execute global after block' do
+      salario = persona.salario
+      expect(salario).to be nil
+    end
+
   end
 
   describe 'error cases' do
-    Case = Class.new do
+    ErrorCase = Class.new do
       pre { 1 > 3}
       def pre_fails
       end
@@ -54,18 +87,18 @@ describe Contrato do
     end
 
     it 'should raise exception when executes pre method' do
-      expect { Case.new.pre_fails }.to raise_error('Validation Error')
+      expect { ErrorCase.new.pre_fails }.to raise_error('Validation Error')
     end
 
     it 'should raise exception when executes post method' do
-      expect { Case.new.post_fails }.to raise_error('Validation Error')
+      expect { ErrorCase.new.post_fails }.to raise_error('Validation Error')
     end
   end
 
   describe 'blocks execution context' do
-    let(:instance) {ContextCase.new}
+    let(:instance) {CaseWithContext.new}
 
-    ContextCase = Class.new do
+    CaseWithContext = Class.new do
       pre { set_algo true }
       def get_algo
         @algo

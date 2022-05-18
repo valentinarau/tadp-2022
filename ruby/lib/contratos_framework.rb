@@ -26,9 +26,15 @@ class Module
           raise 'Validation Error' unless self.instance_eval &block
         end
       end
+      method_data[:before].each do |block|
+        exec.call &block
+      end
       exec.call &method_data[:pre]
       res = orig_meth.bind(self).call *args, &block
       exec.call &method_data[:post]
+      method_data[:after].each do |block|
+        exec.call &block
+      end
       check.call
       res
     end

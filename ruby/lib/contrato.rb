@@ -7,6 +7,13 @@ module Contrato
     @invariants << block
   end
 
+  def before_and_after_each_call(block_before, block_after)
+    @global_before ||= []
+    @global_after ||= []
+    @global_before << block_before
+    @global_after << block_after
+  end
+
   def pre(&block)
     @block_pre = block
   end
@@ -25,10 +32,15 @@ module Contrato
       @wrapped_methods = []
       @method_blocks = {}
     end
+    if @global_before.nil? && @global_after.nil?
+      @global_after = []
+      @global_before = []
+    end
+
   end
 
   private def extract_method_data
-    data = { pre: @block_pre, post: @block_post }
+    data = { pre: @block_pre, post: @block_post, before: @global_before, after: @global_after }
     @block_pre = nil
     @block_post = nil
     data
