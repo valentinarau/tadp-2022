@@ -268,5 +268,43 @@ describe Contrato do
 
   end
 
+  describe 'error cases' do
+    ErrorCase = Class.new do
+      pre { 1 > 3}
+      def pre_fails
+      end
+
+      post { 0 == 1}
+      def post_fails
+      end
+    end
+
+    it 'should raise exception when executes pre method' do
+      expect { ErrorCase.new.pre_fails }.to raise_error(PreBlockValidationError)
+    end
+
+    it 'should raise exception when executes post method' do
+      expect { ErrorCase.new.post_fails }.to raise_error(PostBlockValidationError)
+    end
+  end
+
+  describe 'blocks execution context' do
+    let(:instance) {CaseWithContext.new}
+
+    CaseWithContext = Class.new do
+      pre { set_algo true }
+      def get_algo
+        @algo
+      end
+      def set_algo val
+        @algo = val
+      end
+    end
+
+    it 'should execute in instance context' do
+      expect(instance.get_algo).to be true
+    end
+  end
+
 end
 
