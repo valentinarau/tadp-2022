@@ -24,7 +24,7 @@ describe Contrato do
       end
     end
 
-    it 'should execute pre, mensaje_2 and post' do
+    it 'should execute before, mensaje_2 and after' do
       expected =
         "Entré a un mensaje\n" +
         "Entré de nuevo a un mensaje\n" +
