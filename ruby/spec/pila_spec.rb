@@ -103,9 +103,12 @@ describe 'Stack' do
 
     it 'should pop existing element when the stack is not empty' do
       valid_capacity = 30
+      element = 'element'
+      result = nil
       expect { @stack = Stack.new(valid_capacity) }.not_to raise_error
-      expect { @stack.push("element0") }.not_to raise_error
-      expect (@stack.pop).to be "element0"
+      expect { @stack.push(element) }.not_to raise_error
+      expect { result = @stack.pop }.not_to raise_error
+      expect(result).to be == element
     end
 
   end
@@ -119,10 +122,13 @@ describe 'Stack' do
     end
 
     it 'should return top element when the stack is not empty' do
+      top_element = nil
       valid_capacity = 30
+      element = 'element'
       expect { @stack = Stack.new(valid_capacity) }.not_to raise_error
-      expect { @stack.push("element0") }.not_to raise_error
-      expect (@stack.top).to be "element0"
+      expect { @stack.push(element) }.not_to raise_error
+      expect { top_element = @stack.top }.not_to raise_error
+      expect(top_element).to be == element
     end
 
   end
