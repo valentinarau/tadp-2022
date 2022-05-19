@@ -16,7 +16,7 @@ class Context
 
   def execute(exception = ValidationError, &block)
     unless block.nil?
-      raise exception.new unless @self.instance_eval &block
+      raise exception.new unless self.instance_eval &block
     end
   end
 end

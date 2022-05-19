@@ -1,50 +1,32 @@
 describe Contrato do
 
   describe 'Global before and after conditions' do
-    pre_edad_executed = false
-    pre_another_method_executed = false
     let(:persona) { Persona.new }
 
-    before(:each) do
-      pre_edad_executed = false
-      pre_another_method_executed = false
-    end
-
-    Persona = Class.new do
-
-      before_and_after_each_call( proc { self.set_edad 10 }, proc {  self.set_salario 1000  } )
-
-      def edad
-        puts 'la edad es ' + @edad.to_s
-        @edad
+    MiClase = Class.new do
+      before_and_after_each_call(
+        proc{ puts "Entré a un mensaje" },
+        proc{ puts "Salí de un mensaje" }
+      )
+    
+      def mensaje_1
+        puts "mensaje_1"
+        return 5
       end
-
-      def salario
-        puts 'salario es ' + @salario.to_s
-        @salario
-      end
-
-      def set_salario nuevoSalario
-        @salario = nuevoSalario
-      end
-
-      def set_edad nuevaEdad
-        @edad = nuevaEdad
+    
+      def mensaje_2
+        puts "mensaje_2"
+        return 3
       end
     end
 
-    it 'should execute for all methods the before and after each call procs' do
-      edad = persona.edad
-      salario = persona.salario
-      expect(edad).to eq 10
-      expect(salario).to eq 1000
+    it 'should execute pre, mensaje_2 and post' do
+      expected =
+        "Entré a un mensaje\n" +
+        "mensaje_2\n" +
+        "Salí de un mensaje\n"
+      expect{ MiClase.new.mensaje_2 }.to output(expected).to_stdout
     end
-
-    it 'should evaluate method before execute global after block' do
-      salario = persona.salario
-      expect(salario).to be nil
-    end
-
   end
 
   describe 'Methods pre and post validations' do

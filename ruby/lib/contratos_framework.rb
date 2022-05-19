@@ -21,13 +21,13 @@ class Module
     define_method(method_name) do |*args, &block|
       context = Context.new(self, orig_meth.parameters, args) ## TODO que pasa cuando el `orig_meth` es uno ya overrideado ?? tiene params de más
       method_data[:before].each do |block|
-        context.execute(ValidationError, &block)
+        Class.instance_exec(ValidationError, &block)
       end
       context.execute(PreBlockValidationError, &method_data[:pre])
       res = orig_meth.bind(self).call *args, &block
       context.execute(PostBlockValidationError, &method_data[:post])
       method_data[:after].each do |block|
-        context.execute(ValidationError, &block)
+        Class.instance_exec(ValidationError, &block)
       end
       self.class.check_invariants(self)
       res
