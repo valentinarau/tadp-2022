@@ -19,22 +19,17 @@ class Module
     method_data = extract_method_data
     orig_meth = instance_method(method_name)
     define_method(method_name) do |*args, &block|
-      context = Context.new(self, orig_meth.parameters, args)
-      exec = lambda do |&block|
-        unless block.nil?
-          raise 'Validation Error' unless self.instance_eval &block
-        end
-      end
+      context = Context.new(self, orig_meth.parameters, args) ## TODO que pasa cuando el `orig_meth` es uno ya overrideado ?? tiene params de más
       method_data[:before].each do |block|
-        exec.call &block
+        context.execute(ValidationError, &block)
       end
       context.execute(PreBlockValidationError, &method_data[:pre])
       res = orig_meth.bind(self).call *args, &block
       context.execute(PostBlockValidationError, &method_data[:post])
       method_data[:after].each do |block|
-        exec.call &block
+        context.execute(ValidationError, &block)
       end
-      self.class.check_invariants(self.class)
+      self.class.check_invariants(self)
       res
     end
   end

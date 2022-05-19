@@ -3,7 +3,7 @@ describe Context do
     Context.new(self, [], nil)
   end
 
-  describe 'set context' do
+  describe 'Context with parameters' do
     parameters = [
       [:req, :method1],
       [:req, :method2],
@@ -15,7 +15,9 @@ describe Context do
     it 'should define a method for each parameter' do
       expect(c.methods.include?(:sarasa)).to be false
       expect(c.methods.include?(:method1)).to be true
+      expect(c.method1).to be nil
       expect(c.methods.include?(:method2)).to be true
+      expect(c.method2).to be nil
     end
 
     it 'should define a method that returns args' do
@@ -24,13 +26,9 @@ describe Context do
       expect(c.method1).to eq(11)
       expect(c.method2).to eq(22)
     end
-
-    it 'should not throw exception when args has not value' do
-      expect(c.method1).to be nil
-    end
   end
 
-  describe 'context delegates on instance' do
+  describe 'Context delegates on instance' do
     let(:obj) { Case.new }
     let(:c) { Context.new(obj, []) }
 

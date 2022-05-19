@@ -24,7 +24,9 @@ module Contrato
 
   private def should_skip(method_name)
     method_name.eql?(:method_added) or
-      (@invariants.nil? && @block_post.nil? && @block_pre.nil?)
+      (@invariants.nil? &&
+        @block_post.nil? && @block_pre.nil? &&
+        @global_before.nil? && @global_after.nil?)
   end
 
   private def init_if_needed
