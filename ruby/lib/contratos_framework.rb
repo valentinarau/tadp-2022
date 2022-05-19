@@ -23,7 +23,7 @@ class Module
       method_data[:before].each {|block| Class.instance_exec(ValidationError, &block) }
       context.execute(PreBlockValidationError, &method_data[:pre])
       res = orig_meth.bind(self).call *args, &block
-      context.execute(PostBlockValidationError, &method_data[:post])
+      context.execute(PostBlockValidationError, res, &method_data[:post])
       method_data[:after].each {|block| Class.instance_exec(ValidationError, &block) }
       self.class.check_invariants(self)
       res
