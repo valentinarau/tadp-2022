@@ -8,7 +8,11 @@ describe Contrato do
         proc{ puts "Entré a un mensaje" },
         proc{ puts "Salí de un mensaje" }
       )
-    
+      before_and_after_each_call(
+        proc{ puts "Entré de nuevo a un mensaje" },
+        proc{ puts "Salí otra vez de un mensaje" }
+      )
+
       def mensaje_1
         puts "mensaje_1"
         return 5
@@ -23,8 +27,10 @@ describe Contrato do
     it 'should execute pre, mensaje_2 and post' do
       expected =
         "Entré a un mensaje\n" +
+        "Entré de nuevo a un mensaje\n" +
         "mensaje_2\n" +
-        "Salí de un mensaje\n"
+        "Salí de un mensaje\n" +
+        "Salí otra vez de un mensaje\n"
       expect{ MiClase.new.mensaje_2 }.to output(expected).to_stdout
     end
   end
