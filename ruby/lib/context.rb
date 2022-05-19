@@ -14,9 +14,9 @@ class Context
     @self.method(symbol).call *args
   end
 
-  def execute(exception = ValidationError, &block)
+  def execute(exception = ValidationError, *args, &block)
     unless block.nil?
-      raise exception.new unless @self.instance_eval &block
+      raise exception.new unless self.instance_exec(*args, &block)
     end
   end
 end

@@ -1,50 +1,38 @@
 describe Contrato do
 
   describe 'Global before and after conditions' do
-    pre_edad_executed = false
-    pre_another_method_executed = false
     let(:persona) { Persona.new }
 
-    before(:each) do
-      pre_edad_executed = false
-      pre_another_method_executed = false
-    end
+    MiClase = Class.new do
+      before_and_after_each_call(
+        proc{ puts "Entré a un mensaje" },
+        proc{ puts "Salí de un mensaje" }
+      )
+      before_and_after_each_call(
+        proc{ puts "Entré de nuevo a un mensaje" },
+        proc{ puts "Salí otra vez de un mensaje" }
+      )
 
-    Persona = Class.new do
-
-      before_and_after_each_call( proc { self.set_edad 10 }, proc {  self.set_salario 1000  } )
-
-      def edad
-        puts 'la edad es ' + @edad.to_s
-        @edad
+      def mensaje_1
+        puts "mensaje_1"
+        return 5
       end
-
-      def salario
-        puts 'salario es ' + @salario.to_s
-        @salario
-      end
-
-      def set_salario nuevoSalario
-        @salario = nuevoSalario
-      end
-
-      def set_edad nuevaEdad
-        @edad = nuevaEdad
+    
+      def mensaje_2
+        puts "mensaje_2"
+        return 3
       end
     end
 
-    it 'should execute for all methods the before and after each call procs' do
-      edad = persona.edad
-      salario = persona.salario
-      expect(edad).to eq 10
-      expect(salario).to eq 1000
+    it 'should execute before, mensaje_2 and after' do
+      expected =
+        "Entré a un mensaje\n" +
+        "Entré de nuevo a un mensaje\n" +
+        "mensaje_2\n" +
+        "Salí de un mensaje\n" +
+        "Salí otra vez de un mensaje\n"
+      expect{ MiClase.new.mensaje_2 }.to output(expected).to_stdout
     end
-
-    it 'should evaluate method before execute global after block' do
-      salario = persona.salario
-      expect(salario).to be nil
-    end
-
   end
 
   describe 'Methods pre and post validations' do
@@ -58,7 +46,7 @@ describe Contrato do
       end
 
       pre { pre_executed = true }
-      post { post_executed = true }
+      post { |x| post_executed = true }
       def method_both_blocks
       end
 
@@ -66,7 +54,7 @@ describe Contrato do
       def method_only_pre_block
       end
 
-      post { post_executed = true }
+      post { |x| post_executed = true }
       def method_only_post_block
       end
 
@@ -74,22 +62,22 @@ describe Contrato do
       end
 
       pre { 0 > 1 }
-      post { post_executed = true }
+      post { |x| post_executed = true }
       def method_pre_fail_post_pass
       end
 
       pre { pre_executed = true }
-      post { 0 > 1 }
+      post { |x| 0 > 1 }
       def method_pre_pass_post_fail
       end
 
       pre { 0 > 1 }
-      post { 0 > 1 }
+      post { |x| 0 > 1 }
       def method_pre_fail_post_fail
       end
 
       pre { pre_executed = true }
-      post { post_executed = true }
+      post { |x| post_executed = true }
       def method_pre_pass_post_pass
         @int_value = 2
       end
@@ -101,6 +89,16 @@ describe Contrato do
 
       def set_algo(val)
         @algo = val
+      end
+
+      post { |x| x > 18 }
+      def post_fails_with_input
+        @int_value
+      end
+
+      post { |x| x == 0 }
+      def post_pass_with_input
+        @int_value
       end
     end
 
@@ -154,6 +152,14 @@ describe Contrato do
 
     it 'should can call instance methods from PRE/POST blocks' do
       expect(generic_class.get_algo).to be true
+    end
+
+    it 'should raise an exception in post validation with input' do
+      expect { generic_class.post_fails_with_input }.to raise_error(ValidationError)
+    end
+
+    it 'should pass post validation with input' do
+      expect { generic_class.post_pass_with_input }.not_to raise_error
     end
   end
 
