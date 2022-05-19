@@ -19,16 +19,4 @@ class Context
       raise exception.new unless self.instance_eval &block
     end
   end
-
-  def execute_before
-    @self.class
-         .instance_variable_get(:@global_before)
-         .each { |block| Class.instance_exec(ValidationError, &block) }
-  end
-
-  def execute_after
-    @self.class
-         .instance_variable_get(:@global_after)
-         .each { |block| Class.instance_exec(ValidationError, &block) }
-  end
 end
