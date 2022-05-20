@@ -19,8 +19,9 @@ describe 'Operaciones' do
     dividendo = 16
     divisor = 4
     expected_result = 4
-    expect { operaciones.dividir(dividendo, divisor) }.not_to raise_error
-    expect(operaciones.dividir(dividendo, divisor)).to eq expected_result
+    result = nil
+    expect { result = operaciones.dividir(dividendo, divisor) }.not_to raise_error
+    expect(result).to eq expected_result
   end
 
 end
