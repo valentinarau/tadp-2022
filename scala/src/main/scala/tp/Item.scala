@@ -10,6 +10,8 @@ abstract class Item(restricciones: List[Restriccion] = List(),modificaciones: He
   def modificar(heroe: Heroe) = if(puedeEquiparse(heroe)) modificaciones(heroe) else heroe.statsBase
 }
 
+trait Mano extends Item
+
 case class UnaMano(restricciones: List[Restriccion] = List(),modificaciones: Heroe => Stats) extends Mano
 case class DosManos(restricciones: List[Restriccion]= List(),modificaciones: Heroe => Stats) extends Item
 case class Cabeza(restricciones: List[Restriccion]= List(),modificaciones: Heroe => Stats) extends Item
@@ -17,13 +19,12 @@ case class Torso(restricciones: List[Restriccion]= List(),modificaciones: Heroe 
 case class Talisman(restricciones: List[Restriccion]= List(),modificaciones: Heroe => Stats) extends Item
 
 object Restricciones {
-  def statMinimo(stat: Stat, valor: Int): Restriccion = (heroe: Heroe) => stat(heroe.statsBase) > valor
+  def statMinimo(stat: Stat, valor: Int): Restriccion = (heroe: Heroe) => stat(heroe.stats()) > valor
   def trabajosValidos(trabajos: List[Trabajo]): Restriccion = (heroe: Heroe) => trabajos.contains(heroe.trabajo.get)
   def sinTrabajo: Restriccion = (heroe: Heroe) => heroe.trabajo.isEmpty
 }
 //case class Inventario(cabeza: Option[ItemCabeza], torso: Option[ItemTorso], manoDerecha: Option[ItemMano], manoIzquierda: Option[ItemMano], dosManos: Option[DosManos]) {
 
-trait Mano extends Item
 //case class UnaMano(derecha: Option[Item], izquierda: Option[Item]) extends Mano
 /*case class UnaMano(item: Item) extends Mano
 case class DosManos(item: Item) extends Mano
