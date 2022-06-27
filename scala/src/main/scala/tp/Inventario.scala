@@ -17,12 +17,13 @@ case class Inventario(cabeza: Option[Cabeza]      = None,
   //  }
   //
   //  def modificarStats(stats:Stats): Stats = List.apply(izquierda).foldRight(stats)((i,s) => i.modificaciones(s))
-  def cantidadItems: Int = ???
+  def cantidadItems: Int = items.size
 
   def agregarItem(item: Item, heroe: Heroe): Inventario = ???
 
-  def items:List[Item] = List.apply(cabeza.get,torso.get,manoDerecha.get,manoIzquierda.get,dosManos.get) ++ talismanes
+  def items:List[Item] = List.apply(cabeza,torso,manoDerecha,manoIzquierda,dosManos).flatten ++ talismanes
 
-  def modificar(heroe: Heroe): Stats = (items.foldLeft(heroe) { (h,i) => h.copy(statsBase = i.modificar(h)) }).statsBase
+  def modificar(heroe: Heroe): Stats = (items.foldLeft(heroe) {(h,i) => h.copy(statsBase = i.modificar(h))}).statsBase
 
 }
+

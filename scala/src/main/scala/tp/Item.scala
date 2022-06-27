@@ -39,29 +39,31 @@ case class Talisman(item: Item)*/
 
 //  Casco Vikingo: +10 hp, sólo lo pueden usar héroes con fuerza base > 30. Va en la cabeza.
 object cascoVikingo extends Cabeza(restricciones = List(Restricciones.statMinimo(Fuerza, 30)),
-                                   modificaciones = (hereo) => hereo.stats().sumar(stats = Stats(hp = 10)))
+                                   modificaciones = (heroe) => heroe.modificarStat(Stats(hp = 10)))
 
 //  Palito mágico: +20 inteligencia, sólo lo pueden usar magos (o ladrones con más de 30 de inteligencia base). Una mano.
 //object palitoMagico extends UnaMano(item = Item(restricciones = Seq(Restricciones), modificaciones = (stats) => stats.copy(hp = stats.hp + 10) ))
 
 //  Armadura Elegante-Sport: +30 velocidad, -30 hp. Armadura.
-object armaduraEleganteSport extends Torso(modificaciones = (hereo) => hereo.stats().sumar(Stats(velocidad = 30, hp = -30)))
+object armaduraEleganteSport extends Torso(modificaciones = (heroe) => heroe.modificarStat(Stats(velocidad = 30, hp = -30)))
 
 //  Arco Viejo: +2 fuerza. Ocupa las dos manos.
-object arcoViejo extends DosManos(modificaciones = (heroe) => heroe.stats().sumar(Stats(fuerza = 2)))
+object arcoViejo extends DosManos(modificaciones = (heroe) => heroe.modificarStat(Stats(fuerza = 2)))
 
 //  Escudo Anti-Robo: +20 hp. No pueden equiparlo los ladrones ni nadie con menos de 20 de fuerza base. Una mano.
 //  Talismán de Dedicación: Todos los stats se incrementan 10% del valor del stat principal del trabajo.
 //  Talismán del Minimalismo: +50 hp. -10 hp por cada otro ítem equipado.
-object talismanDelMinimalismo extends Talisman(modificaciones = (heroe:Heroe) => heroe.stats()
-  .sumar(Stats(hp = 50))
-  .sumar(Stats(hp = - (10 * heroe.inventario.cantidadItems)))
-  )
+// TODO: CHEQUEAR COMO QUEDARIA MEJOR
+object talismanDelMinimalismo extends Talisman(modificaciones = (heroe:Heroe) =>
+                                               heroe.modificarStat(Stats(hp = 50))
+                                               .sumar(Stats(hp = - (10 * heroe.inventario.cantidadItems))))
 
 //  Vincha del búfalo de agua: Si el héroe tiene más fuerza que inteligencia, +30 a la inteligencia; de lo contrario +10 a todos los stats menos la inteligencia. Sólo lo pueden equipar los héroes sin trabajo. Sombrero.
-//object vinchaDelBufalo extends Cabeza(restricciones = Seq(Restricciones.sinTrabajo),modificaciones = (heroe) => heroe.stats().sumar())
+object vinchaDelBufalo extends Cabeza(restricciones = List(Restricciones.sinTrabajo),
+                                      modificaciones = (heroe) =>
+                                                       if(heroe.fuerzaBase > heroe.inteligenciaBase) heroe.modificarStat(Stats(inteligencia = 30)) else heroe.modificarStat(Stats(inteligencia = 30))  )
 
 //  Talismán maldito: Todos los stats son 1.
-object talismanMaldito extends Talisman(modificaciones = (heroe) => heroe.stats().reset())
+object talismanMaldito extends Talisman(modificaciones = (heroe) => heroe.statsBase.reset())
 
 //  Espada de la Vida: Hace que la fuerza del héroe sea igual a su hp.
