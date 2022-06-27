@@ -5,7 +5,7 @@ case class Inventario(cabeza: Option[Cabeza]      = None,
                       manoDerecha: Option[Mano]   = None,
                       manoIzquierda: Option[Mano] = None,
                       dosManos: Option[Mano]      = None,
-                      talismanes: List[Talisman]   = List()) {
+                      talismanes: List[Talisman]  = List()) {
 
 //  def agregarItem(item: Item, heroe: Heroe): Inventario = {
 //    if (item.puedeEquiparse(heroe)) {

@@ -10,7 +10,6 @@ object Restricciones {
   def trabajosValidos(trabajos: List[Trabajo]): Restriccion = (heroe: Heroe) => trabajos.contains(heroe.trabajo.get)
   def sinTrabajo: Restriccion = (heroe: Heroe) => heroe.trabajo.isEmpty
 }
-//case class Inventario(cabeza: Option[ItemCabeza], torso: Option[ItemTorso], manoDerecha: Option[ItemMano], manoIzquierda: Option[ItemMano], dosManos: Option[DosManos]) {
 
 trait Mano
 case class UnaMano(derecha: Option[Item], izquierda: Option[Item]) extends Mano
