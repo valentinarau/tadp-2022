@@ -4,14 +4,16 @@ case class Heroe(trabajo: Option[Trabajo] = None, statsBase: Stats, inventario: 
 
   def stats(): Stats = trabajo
     .foldLeft(inventario
-      .modificar(this)) { (s, t) => t.modificar(s)}
+      .modificar(this)) { (s, t) => t.modificar(s) }
     .refinar()
 
   def modificarStats(stat: Stats): Heroe = copy(statsBase = statsBase + stat)
 
   def equipar(item: Item): Heroe = copy(inventario = inventario.agregarItem(item, this))
 
-  def especializarse(trabajo: Trabajo): Heroe = copy(trabajo= Some(trabajo))
+  def especializarse(trabajo: Trabajo): Heroe = copy(trabajo = Some(trabajo))
 
-  def es (t: Trabajo): Boolean = trabajo.contains(t)
+  def es(t: Trabajo): Boolean = trabajo.contains(t)
+
+  def valorStatPrincipal(): Option[Int] = for {trabajo <- trabajo} yield trabajo.statPrincipal(stats())
 }
