@@ -2,7 +2,10 @@ package tp
 
 case class Heroe(trabajo: Option[Trabajo] = None, statsBase: Stats, inventario: Inventario = Inventario()) {
 
-  def stats(): Stats = trabajo.foldLeft(inventario.modificar(this)) { (s, t) => t.modificar(s)}
+  def stats(): Stats = trabajo
+    .foldLeft(inventario
+      .modificar(this)) { (s, t) => t.modificar(s)}
+    .refinar()
 
   def modificarStat(stat: Stats): Stats = statsBase + stat
 
