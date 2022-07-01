@@ -5,11 +5,11 @@ trait Recompensa {
 }
 
 case class NuevoHeroe(heroe: Heroe) extends Recompensa {
-  override def otorgar(equipo: Equipo): Equipo = ???
+  override def otorgar(equipo: Equipo): Equipo = equipo.incorporar(heroe)
 }
 
 case class Oro(monto: Int) extends Recompensa {
-  override def otorgar(equipo: Equipo): Equipo = ???
+  override def otorgar(equipo: Equipo): Equipo = equipo.copy(pozo = equipo.pozo + monto)
 }
 
 case class NuevoItem(item: Item) extends Recompensa {
