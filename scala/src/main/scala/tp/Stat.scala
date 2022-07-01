@@ -1,15 +1,19 @@
 package tp
-import scala.math._
 
-case class Stats(fuerza: Int = 1, hp: Int = 1, inteligencia: Int = 1, velocidad: Int = 1) {
-  def sumar(stats: Stats): Stats = copy(
+case class Stats(fuerza: Int = 0, hp: Int = 0, inteligencia: Int = 0, velocidad: Int = 0) {
+  def +(stats: Stats): Stats = copy(
     fuerza       = fuerza + stats.fuerza,
     hp           = hp + stats.hp,
     inteligencia = inteligencia + stats.inteligencia,
-    velocidad    = velocidad + stats.velocidad
+    velocidad    = velocidad + stats.velocidad,
   )
 
-  def reset(): Stats = Stats()
+  def initializeWith(value: Int): Stats = copy(
+    fuerza       = value,
+    hp           = value,
+    inteligencia = value,
+    velocidad    = value,
+  )
 }
 
 trait Stat extends (Stats => Int)

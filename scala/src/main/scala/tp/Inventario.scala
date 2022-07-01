@@ -22,20 +22,20 @@ case class Inventario(cabeza: Option[Cabeza]      = None,
   def agregarItem(item: Item, heroe: Heroe): Inventario =
     if(item.puedeEquiparse(heroe)) {
       item match {
-        case Cabeza(_, _) => this.copy(cabeza = (cabeza.map(_.copy(item.restricciones, item.modificaciones))))
-        case DosManos(_, _) => this.copy(manoDerecha = None,manoIzquierda = None,dosManos = (dosManos.map(_.copy(item.restricciones, item.modificaciones))))
-        case UnaMano(_, _) =>
-          if(manoDerecha.isEmpty) this.copy(dosManos = None, manoDerecha = manoDerecha.map(_.copy(item.restricciones,item.modificaciones)))
-          else this.copy(dosManos = None, manoIzquierda = manoDerecha.map(_.copy(item.restricciones,item.modificaciones)))
-        case Talisman(_, _) => this.copy(talismanes = talismanes.:::(List(item)))
-        case Torso(_, _) => this.copy(torso = (torso.map(_.copy(item.restricciones, item.modificaciones))))
-        case _ => this.copy(cabeza = (cabeza.map(_.copy(item.restricciones, item.modificaciones))))
+        case c: Cabeza => copy(cabeza = Some(c))
+        case dm: DosManos => copy(manoDerecha = None,manoIzquierda = None,dosManos = Some(dm))
+        case m: UnaMano =>
+          if(manoDerecha.isEmpty) copy(dosManos = None, manoDerecha = Some(m))
+          else copy(dosManos = None, manoIzquierda = Some(m))
+        case t: Talisman => copy(talismanes = t :: talismanes)
+        case t: Torso => copy(torso = Some(t))
+        case _ => this
       }
     } else this
 
   def items: List[Item] = List.apply(cabeza, torso, manoDerecha, manoIzquierda, dosManos).flatten ::: talismanes
 
-  def modificar(heroe: Heroe): Stats = (items.foldLeft(heroe) {(h,i) => h.copy(statsBase = i.modificaciones(h))}).statsBase
+  def modificar(heroe: Heroe): Stats = items.foldLeft(heroe.statsBase) {(stats, i) => i.modificador(stats, heroe)}
 
 }
 

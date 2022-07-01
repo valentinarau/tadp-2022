@@ -1,7 +1,9 @@
 package tp
 
-case class Trabajo(statPrincipal: Stat, modificaciones: Stats)
+case class Trabajo(statPrincipal: Stat, modificaciones: Stats) {
+  def modificar(stats: Stats): Stats = stats + modificaciones
+}
 
-object Guerrero extends Trabajo(Fuerza, (Stats(fuerza = 15, hp = 10, inteligencia = -10)))
-object Mago extends Trabajo(Inteligencia, (Stats(fuerza = -20, inteligencia = 20)))
-object Ladron extends Trabajo(Velocidad, (Stats(velocidad = 10, hp = -5)))
+object Guerrero extends Trabajo(Fuerza, Stats(fuerza = 15, hp = 10, inteligencia = -10))
+object Mago extends Trabajo(Inteligencia, Stats(fuerza = -20, inteligencia = 20))
+object Ladron extends Trabajo(Velocidad, Stats(velocidad = 10, hp = -5))
