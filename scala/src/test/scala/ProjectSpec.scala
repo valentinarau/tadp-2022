@@ -183,4 +183,25 @@ class ProjectSpec extends AnyFreeSpec {
     }
 
   }
+
+  "Equipo" - {
+    val equipo = Equipo(nombre = "Test", pozo = 0, heroes = List())
+    val heroe = Heroe(statsBase = Stats())
+
+  "Al incorporar un Heroe a un Equipo, debería pertenecer a éste" in {
+      equipo.incorporar(heroe).heroes.contains(heroe) shouldBe true
+    }
+
+    "Reemplazar un Heroe de un Equipo" in {
+      equipo.incorporar(heroe).reemplazar(heroe, heroe.copy(statsBase = Stats(hp = 10))).heroes.contains(heroe) shouldBe false
+    }
+
+    "Mejor heroe según stat principal" in {
+      val guerrero = Heroe(Some(Guerrero), statsBase = Stats(fuerza = 10))
+      val mago = Heroe(Some(Mago), statsBase = Stats(inteligencia = 10))
+      val ladron = Heroe(Some(Ladron), statsBase = Stats(velocidad = 10))
+      val equipoNuevo =  equipo.incorporar(ladron).incorporar(mago).incorporar(guerrero)
+      equipoNuevo.mejorSegun(h => h.valorStatPrincipal().get).get shouldBe mago
+    }
+  }
 }

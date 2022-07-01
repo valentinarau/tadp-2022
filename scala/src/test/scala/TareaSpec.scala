@@ -3,12 +3,13 @@ import org.scalatest.freespec.AnyFreeSpec
 import tp._
 
 class TareaSpec extends AnyFreeSpec {
-  val heroe = Heroe(statsBase = Stats().initializeWith(1))
-  val equipo = Equipo("Los Borbotones", 0, List(heroe))
 
-  val ladron = Heroe(Some(Ladron), Stats())
 
   "Tareas" - {
+    val heroe = Heroe(statsBase = Stats().initializeWith(1))
+    val equipo = Equipo("Los Borbotones", 0, List(heroe))
+
+    val ladron = Heroe(Some(Ladron), Stats())
 
     "Facilidad" - {
 
