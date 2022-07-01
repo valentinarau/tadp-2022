@@ -19,13 +19,13 @@ case object Fuerza extends Stat {
 }
 
 case object HP extends Stat {
-  def apply(s: Stats): Int = s.fuerza
+  def apply(s: Stats): Int = s.hp
 }
 
 case object Inteligencia extends Stat {
-  def apply(s: Stats): Int = s.fuerza
+  def apply(s: Stats): Int = s.inteligencia
 }
 
 case object Velocidad extends Stat {
-  def apply(s: Stats): Int = s.fuerza
+  def apply(s: Stats): Int = s.velocidad
 }
