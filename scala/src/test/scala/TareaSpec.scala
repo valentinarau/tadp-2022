@@ -16,16 +16,19 @@ class TareaSpec extends AnyFreeSpec {
         val pelearContraMonstruo = PelearContraMonstruo(22)
 
         "Equipo con lider sin trabajo tiene facilidad 10" in {
-          pelearContraMonstruo.facilidad(equipo, heroe) shouldBe Some(10)
+          pelearContraMonstruo.facilidad(equipo, heroe).isSuccess shouldBe true
+          pelearContraMonstruo.facilidad(equipo, heroe).get shouldBe 10
         }
 
         "Equipo con lider Ladron tiene facilidad 10" in {
-          pelearContraMonstruo.facilidad(equipo.incorporar(ladron), heroe) shouldBe Some(10)
+          pelearContraMonstruo.facilidad(equipo.incorporar(ladron), heroe).isSuccess shouldBe true
+          pelearContraMonstruo.facilidad(equipo.incorporar(ladron), heroe).get shouldBe 10
         }
 
         "Equipo con lider Guerrero tiene facilidad 20" in {
           val guerrero = Heroe(Some(Guerrero), Stats())
-          pelearContraMonstruo.facilidad(equipo.incorporar(guerrero), heroe) shouldBe Some(20)
+          pelearContraMonstruo.facilidad(equipo.incorporar(guerrero), heroe).isSuccess shouldBe true
+          pelearContraMonstruo.facilidad(equipo.incorporar(guerrero), heroe).get shouldBe 20
         }
 
       }
@@ -34,16 +37,18 @@ class TareaSpec extends AnyFreeSpec {
         def inteligenciaHeroe() = Inteligencia(heroe.stats())
 
         "Equipo sin ladrones tiene facilidad igual a la inteligencia del heroe" in {
-          ForzarPuerta.facilidad(equipo, heroe) shouldBe Some(inteligenciaHeroe())
+          ForzarPuerta.facilidad(equipo, heroe).isSuccess shouldBe true
+          ForzarPuerta.facilidad(equipo, heroe).get shouldBe inteligenciaHeroe()
         }
 
         "Equipo con 2 ladrones tiene facilidad igual a la inteligencia del heroe + 20" in {
-          ForzarPuerta.facilidad(
+          val resultado = ForzarPuerta.facilidad(
             equipo
               .incorporar(ladron)
               .incorporar(ladron),
-            heroe) shouldBe
-            Some(inteligenciaHeroe() + 20)
+            heroe)
+          resultado.isSuccess shouldBe true
+          resultado.get shouldBe 20 + inteligenciaHeroe()
         }
 
       }
@@ -52,11 +57,12 @@ class TareaSpec extends AnyFreeSpec {
         val robarTalisman = RobarTalisman(Talisman(modificador = (s, _) => s))
 
         "Equipo sin lider ladron no puede realizar la tarea" in {
-          robarTalisman.facilidad(equipo, heroe) shouldBe Some(None)
+          robarTalisman.facilidad(equipo, heroe).isSuccess shouldBe false
         }
 
         "Equipo con lider Ladron tiene facilidad igual a la velocidad del heroe" in {
-          robarTalisman.facilidad(equipo.incorporar(ladron), heroe) shouldBe Some(Velocidad(heroe.stats()))
+          robarTalisman.facilidad(equipo.incorporar(ladron), heroe).isSuccess shouldBe true
+          robarTalisman.facilidad(equipo.incorporar(ladron), heroe).get shouldBe Velocidad(heroe.stats())
         }
 
       }

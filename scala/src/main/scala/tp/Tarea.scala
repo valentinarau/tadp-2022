@@ -2,16 +2,17 @@ package tp
 import scala.util.{Failure, Success, Try}
 
 case class MisionFallidaException(tarea: Tarea) extends RuntimeException
+case class NoPuedeRealizarTareaException(tarea: Tarea) extends RuntimeException
 
 trait Tarea {
-  def facilidad(equipo: Equipo, heroe: Heroe): Option[Int]
+  def facilidad(equipo: Equipo, heroe: Heroe): Try[Int]
   def intentar(heroe: Heroe): Try[Heroe]
 }
 
 case class PelearContraMonstruo(danio: Int) extends Tarea {
-  override def facilidad(equipo: Equipo, heroe: Heroe): Option[Int] = equipo.trabajoDelLider match {
-    case Some(Guerrero) => Some(20)
-    case _ => Some(10)
+  override def facilidad(equipo: Equipo, heroe: Heroe): Try[Int] = equipo.trabajoDelLider match {
+    case Some(Guerrero) => Success(20)
+    case _ => Success(10)
   }
 
   override def intentar(heroe: Heroe): Try[Heroe] = {
@@ -24,7 +25,7 @@ case class PelearContraMonstruo(danio: Int) extends Tarea {
 }
 
 case object ForzarPuerta extends Tarea {
-  override def facilidad(equipo: Equipo, heroe: Heroe): Option[Int] = Some(
+  override def facilidad(equipo: Equipo, heroe: Heroe): Try[Int] = Success(
     Inteligencia(heroe.stats()) + 10 * equipo.heroes.count(h => h.es(Ladron))
   )
 
@@ -35,9 +36,9 @@ case object ForzarPuerta extends Tarea {
 }
 
 case class RobarTalisman(talisman: Talisman) extends Tarea {
-  override def facilidad(equipo: Equipo, heroe: Heroe): Option[Int] = equipo.trabajoDelLider match {
-    case Some(Ladron) => Some(Velocidad(heroe.stats()))
-    // TODO otra clase de Hero NO PUEDE realizar la tarea
+  override def facilidad(equipo: Equipo, heroe: Heroe): Try[Int] = equipo.trabajoDelLider match {
+    case Some(Ladron) => Success(Velocidad(heroe.stats()))
+    case _ => Failure(NoPuedeRealizarTareaException(this))
   }
 
   override def intentar(heroe: Heroe): Try[Heroe] = Success(heroe.equipar(talisman))
