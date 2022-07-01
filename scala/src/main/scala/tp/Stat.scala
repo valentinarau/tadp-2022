@@ -14,6 +14,13 @@ case class Stats(fuerza: Int = 0, hp: Int = 0, inteligencia: Int = 0, velocidad:
     inteligencia = value,
     velocidad    = value,
   )
+
+  def refinar(): Stats = copy(
+    fuerza       = Math.max(1, fuerza),
+    hp           = Math.max(1, hp),
+    inteligencia = Math.max(1, inteligencia),
+    velocidad    = Math.max(1, velocidad),
+  )
 }
 
 trait Stat extends (Stats => Int)
