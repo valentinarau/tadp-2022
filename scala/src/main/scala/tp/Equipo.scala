@@ -11,20 +11,40 @@ case class Equipo(nombre: String, pozo: Int = 0, heroes: List[Heroe] = List()) {
   } yield trabajo
 
   def lider(): Option[Heroe] = {
-    //    for {
-    //      statPrincipales <- heroes.map(_.valorStatPrincipal())
-    //      lider <- heroes.maxByOption(h => for { statPrincipal <- h.valorStatPrincipal() } yield statPrincipal)
-    //      statPrincipalLider <- lider.valorStatPrincipal()
-    //    } yield if(statPrincipales.count(statPrincipalLider == _) > 1) lider else None
+    val lead = heroes.maxBy(h => {
+      for {
+        trabajo <- h.trabajo
+      } yield trabajo.statPrincipal(h.stats())
+    })
 
-    val heroesConTrabajo = heroes.filter(_.trabajo.isDefined)
-    val statsPrincipales = heroesConTrabajo.map(_.trabajo.get.statPrincipal)
-    if (statsPrincipales.size != statsPrincipales.distinct.size) {
-      None
+    val count = heroes.map(h => {
+      for {
+        trabajo <- h.trabajo
+      } yield trabajo.statPrincipal(h.stats())
+    }).count(v => v.contains(lead.trabajo.get.statPrincipal(lead.stats())))
+
+    if (count== 1) {
+      Some(lead)
     } else {
-      heroesConTrabajo.maxByOption(h => h.valorStatPrincipal())
+      None
     }
   }
+
+//  def lider(): Option[Heroe] = {
+//    //    for {
+//    //      statPrincipales <- heroes.map(_.valorStatPrincipal())
+//    //      lider <- heroes.maxByOption(h => for { statPrincipal <- h.valorStatPrincipal() } yield statPrincipal)
+//    //      statPrincipalLider <- lider.valorStatPrincipal()
+//    //    } yield if(statPrincipales.count(statPrincipalLider == _) > 1) lider else None
+//
+//    val heroesConTrabajo = heroes.filter(_.trabajo.isDefined)
+//    val statsPrincipales = heroesConTrabajo.map(_.trabajo.get.statPrincipal)
+//    if (statsPrincipales.size != statsPrincipales.distinct.size) {
+//      None
+//    } else {
+//      heroesConTrabajo.maxByOption(h => h.valorStatPrincipal())
+//    }
+//  }
 
   def incorporar(heroe: Heroe): Equipo = copy(heroes = heroe :: heroes)
 
