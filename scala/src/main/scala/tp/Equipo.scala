@@ -2,6 +2,8 @@ package tp
 
 import types._
 
+import scala.util.Try
+
 case class Equipo(nombre: String, pozo: Int = 0, heroes: List[Heroe] = List()) {
   val trabajoDelLider: Option[Trabajo] = for {
     lider <- lider()
@@ -32,7 +34,15 @@ case class Equipo(nombre: String, pozo: Int = 0, heroes: List[Heroe] = List()) {
     equipoNuevo.incorporar(heroeNuevo)
   }
 
-  def obtenerItem(item: Item): Equipo = ???
+  def obtenerItem(item: Item): Equipo = ??? // se puede usar mejorSegun(criterio) ??
 
   def mejorSegun(predicado: PredicadoMejorHeroe): Option[Heroe] = heroes.maxByOption(predicado)
+
+  def intentar(tarea: Tarea): Try[Equipo] = {
+    val heroe = heroes.minBy( h => tarea.facilidad(this, h).get) // FIXME este get esta mal
+
+    for {
+      heroeAfectado <- tarea.intentar(heroe)
+    } yield reemplazar(heroe, heroeAfectado)
+  }
 }
