@@ -1,7 +1,8 @@
 package tp
 
-trait Recompensa {
- def otorgar(equipo: Equipo): Equipo
+trait Recompensa extends (Equipo => Equipo) {
+  def otorgar(equipo: Equipo): Equipo
+  def apply(equipo: Equipo): Equipo = otorgar(equipo)
 }
 
 case class NuevoHeroe(heroe: Heroe) extends Recompensa {

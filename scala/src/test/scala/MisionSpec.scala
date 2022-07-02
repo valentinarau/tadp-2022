@@ -6,6 +6,7 @@ class MisionSpec extends AnyFreeSpec {
 
   "Mision" - {
     val misionBasica = Mision(List(PelearContraMonstruo(10)), Oro(100))
+
     val equipoBasico = Equipo("Solitario", heroes = List(Heroe(Some(Mago), Stats(hp = 50))))
 
     "Equipo unitario completa mision unitaria" in {
@@ -15,7 +16,8 @@ class MisionSpec extends AnyFreeSpec {
     }
 
     "Equipo unitario falla en mision unitaria" in {
-      misionBasica.intentar(equipoBasico).isSuccess shouldBe false
+      val mision = misionBasica.copy(tareas = List(PelearContraMonstruo(100)))
+      mision.intentar(equipoBasico).isSuccess shouldBe false
     }
   }
 }
