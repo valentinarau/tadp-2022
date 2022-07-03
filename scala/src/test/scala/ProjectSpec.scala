@@ -183,4 +183,66 @@ class ProjectSpec extends AnyFreeSpec {
     }
 
   }
+
+  "Equipo" - {
+    val equipo = Equipo(nombre = "Test", pozo = 0, heroes = List())
+    val heroe = Heroe(statsBase = Stats())
+
+    val guerrero = Heroe(Some(Guerrero), statsBase = Stats(fuerza = 10))
+    val mago = Heroe(Some(Mago), statsBase = Stats(inteligencia = 10))
+    val ladron = Heroe(Some(Ladron), statsBase = Stats(velocidad = 10))
+
+    "Un equipo sin lider definido" in {
+      val equipoNuevo = equipo.incorporar(guerrero).incorporar(guerrero)
+      equipoNuevo.lider() shouldBe None
+    }
+
+    "Un equipo con lider definido" in {
+      val equipoNuevo = equipo.incorporar(guerrero).incorporar(mago).incorporar(ladron)
+      equipoNuevo.lider().isDefined shouldBe true
+      equipoNuevo.lider().get shouldBe mago
+    }
+
+    "Al incorporar un Heroe a un Equipo, debería pertenecer a éste" in {
+        equipo.incorporar(heroe).heroes.contains(heroe) shouldBe true
+    }
+
+    "Reemplazar un Heroe de un Equipo" in {
+      equipo.incorporar(heroe).reemplazar(heroe, heroe.copy(statsBase = Stats(hp = 10))).heroes.contains(heroe) shouldBe false
+    }
+
+    "Mejor heroe según stat principal" in {
+      val equipoNuevo = equipo.incorporar(ladron).incorporar(mago).incorporar(guerrero)
+      equipoNuevo.mejorSegun(h => h.valorStatPrincipal().get).get shouldBe mago
+    }
+
+    "Mejor heroe por facilidad" in {
+      val equipoNuevo = equipo.incorporar(ladron).incorporar(guerrero).incorporar(mago)
+      equipoNuevo.mejorHeroePorFacilidad(ForzarPuerta).get shouldBe mago
+    }
+
+    "Equipo con Heroe intenta tarea" in {
+      val equipoNuevo = equipo.incorporar(guerrero)
+      equipoNuevo.intentar(PelearContraMonstruo(1)).isSuccess shouldBe true
+    }
+
+    "Equipo con Heroe intenta tarea fallida" in {
+      val equipoNuevo = equipo.incorporar(mago)
+      equipoNuevo.intentar(PelearContraMonstruo(50)).isSuccess shouldBe false
+    }
+
+    "Equipo vacío intenta tarea" in {
+      equipo.intentar(PelearContraMonstruo(1)).isSuccess shouldBe false
+    }
+
+    "Obtener item que no resulta positivo" in {
+      val equipoNuevo = equipo.incorporar(ladron).incorporar(mago).incorporar(guerrero)
+      equipoNuevo.obtenerItem(talismanMaldito).pozo shouldBe 500
+    }
+
+    "Obtener item que resulta positivo" in {
+      val equipoNuevo = equipo.incorporar(ladron).incorporar(guerrero)
+      equipoNuevo.obtenerItem(armaduraEleganteSport).heroes.find(_.es(Ladron)).get.inventario.torso.get shouldBe armaduraEleganteSport
+    }
+  }
 }
