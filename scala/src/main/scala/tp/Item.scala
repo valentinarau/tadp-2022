@@ -1,17 +1,17 @@
 package tp
 
-abstract class Item(val restriccion: Restriccion = _ => true, val modificador: Modificador = (s, _) => s){
+abstract class Item(val restriccion: Restriccion = _ => true, val modificador: Modificador = (s, _) => s, val precio: Int = 0){
   def puedeEquiparse(heroe: Heroe): Boolean = restriccion(heroe)
 }
 
 trait Modificador extends ((Stats, Heroe) => Stats)
 trait Mano extends Item
 
-case class UnaMano(override val restriccion: Restriccion= _ => true, override val modificador: Modificador) extends Mano
-case class DosManos(override val restriccion: Restriccion= _ => true, override val modificador: Modificador) extends Item
-case class Cabeza(override val restriccion: Restriccion= _ => true, override val modificador: Modificador) extends Item
-case class Torso(override val restriccion: Restriccion= _ => true, override val modificador: Modificador) extends Item
-case class Talisman(override val restriccion: Restriccion= _ => true, override val modificador: Modificador) extends Item
+case class UnaMano(override val restriccion: Restriccion= _ => true, override val modificador: Modificador, override val precio: Int = 0) extends Mano
+case class DosManos(override val restriccion: Restriccion= _ => true, override val modificador: Modificador, override val precio: Int = 0) extends Item
+case class Cabeza(override val restriccion: Restriccion= _ => true, override val modificador: Modificador, override val precio: Int = 0) extends Item
+case class Torso(override val restriccion: Restriccion= _ => true, override val modificador: Modificador, override val precio: Int = 0) extends Item
+case class Talisman(override val restriccion: Restriccion= _ => true, override val modificador: Modificador, override val precio: Int = 0) extends Item
 
 trait Restriccion extends (Heroe => Boolean)
 
@@ -42,7 +42,8 @@ case class And(restricciones: List[Restriccion]) extends Restriccion {
 //  Casco Vikingo: +10 hp, sólo lo pueden usar héroes con fuerza base > 30. Va en la cabeza.
 object cascoVikingo extends Cabeza(
   restriccion = StatMinimo(Fuerza, 30),
-  modificador = (stats: Stats, _) => stats + Stats(hp = 10))
+  modificador = (stats: Stats, _) => stats + Stats(hp = 10),
+  precio = 300)
 
 //  Palito mágico: +20 inteligencia, sólo lo pueden usar magos (o ladrones con más de 30 de inteligencia base). Una mano.
 object palitoMagico extends UnaMano(
@@ -80,7 +81,7 @@ object vinchaDelBufalo extends Cabeza(
     else stats + Stats(fuerza = 10 , velocidad = 10 , hp = 10))
 
 //  Talismán maldito: Todos los stats son 1.
-object talismanMaldito extends Talisman(modificador = (_, _) => Stats().initializeWith(1))
+object talismanMaldito extends Talisman(modificador = (_, _) => Stats().initializeWith(1), precio = 500)
 
 //  Espada de la Vida: Hace que la fuerza del héroe sea igual a su hp.
 object EspadaDeLaVida extends UnaMano(modificador = (stats:Stats, _) => stats.copy(fuerza = HP(stats)))

@@ -3,6 +3,7 @@ import scala.util.{Failure, Success, Try}
 
 case class MisionFallidaException(tarea: Tarea) extends RuntimeException
 case class NoPuedeRealizarTareaException(tarea: Tarea) extends RuntimeException
+case class NingunHereoDispuestoPara(tarea: Tarea) extends RuntimeException
 
 trait Tarea {
   def facilidad(equipo: Equipo, heroe: Heroe): Try[Int]
@@ -17,8 +18,8 @@ case class PelearContraMonstruo(danio: Int) extends Tarea {
 
   override def intentar(heroe: Heroe): Try[Heroe] = {
     val heroeDaniado = if(Fuerza(heroe.stats()) < 20) heroe.modificarStats(Stats(hp = -danio)) else heroe
-    heroe match {
-      case _ if HP(heroeDaniado.statsBase) > 0 => Success(heroeDaniado)
+    heroeDaniado match {
+      case _ if HP(heroeDaniado.statsSinRefinar()) > 0 => Success(heroeDaniado)
       case _ => Failure(MisionFallidaException(this))
     }
   }
